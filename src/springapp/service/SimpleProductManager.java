@@ -7,17 +7,19 @@ import springapp.domain.Product;
 public class SimpleProductManager implements ProductManager {
 
 	private static final long serialVersionUID = 1L;
-	
-    public List<Product> getProducts() {
-        throw new UnsupportedOperationException();
-    }
 
-    public void increasePrice(int percentage) {
-        throw new UnsupportedOperationException();        
-    }
+	private List<Product> products;
 
-    public void setProducts(List<Product> products) {
-        throw new UnsupportedOperationException();        
-    }
+	public List<Product> getProducts() {
+		return products;
+	}
+
+	public void increasePrice(int percentage) {
+		// TODO Auto-generated method stub
+	}
+
+	public void setProducts(List<Product> products) {
+		this.products = products;
+	}
 
 }
