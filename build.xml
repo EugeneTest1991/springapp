@@ -33,6 +33,8 @@
         <echo message="tests     --> Run tests"/>   	
         <echo message="deploy    --> Deploy application as directory"/>
         <echo message="deploywar --> Deploy application as a WAR file"/>
+    	<echo message="clean     --> Delete compiled files"/>
+    	<echo message="undeploy  --> Delete application files from tomcat webapps"/>    	    	
         <echo message="install   --> Install application in Tomcat"/>
         <echo message="reload    --> Reload application in Tomcat"/>
         <echo message="start     --> Start Tomcat application"/>
@@ -106,6 +108,22 @@
                 <include name="*.war"/>
             </fileset>
         </copy>
+    </target>
+	
+    <target name="clean" description="Clean output directories">
+        <delete>
+            <fileset dir="${build.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="undeploy" description="Un-Deploy application">
+        <delete>
+            <fileset dir="${deploy.path}/${name}">
+                <include name="**/*.*"/>
+            </fileset>
+        </delete>
     </target>
     
 <!-- ============================================================== -->
