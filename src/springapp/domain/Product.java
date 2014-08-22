@@ -4,36 +4,45 @@ import java.io.Serializable;
 
 public class Product implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String description;
-	private Double price;
+    private int id;
+    private String description;
+    private Double price;
 
-	public String getDescription() {
-		return description;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public Double getPrice() {
-		return price;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setPrice(Double price) {
-		this.price = price;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Product [description=");
-		builder.append(description);
-		builder.append("; price=");
-		builder.append(price);
-		builder.append("]");
-		return builder.toString();
-	}
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Product [description=");
+        builder.append(description);
+        builder.append("; price=");
+        builder.append(price);
+        builder.append("]");
+        return builder.toString();
+    }
 
 }
