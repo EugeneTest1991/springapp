@@ -9,7 +9,7 @@ public class Product implements Serializable {
     private int id;
     private String description;
     private Double price;
-
+    
     public int getId() {
         return id;
     }

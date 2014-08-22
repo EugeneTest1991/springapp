@@ -6,8 +6,17 @@
     <property name="src.dir" value="src"/>
     <property name="web.dir" value="war"/>
     <property name="build.dir" value="${web.dir}/WEB-INF/classes"/>
-	<property name="test.dir" value="test"/>
+    <property name="test.dir" value="test"/>
     <property name="name" value="springapp"/>
+
+    <path id="test-classpath">
+        <fileset dir="${web.dir}/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement path="${build.dir}"/>
+        <pathelement path="${test.dir}"/>
+        <pathelement path="${web.dir}/WEB-INF/classes"/>
+    </path>
 
     <path id="master-classpath">
         <fileset dir="${web.dir}/WEB-INF/lib">
@@ -30,11 +39,11 @@
         <echo message="Available targets are:"/>
         <echo message=""/>
         <echo message="build     --> Build the application"/>
-        <echo message="tests     --> Run tests"/>   	
+        <echo message="tests     --> Run tests"/>
         <echo message="deploy    --> Deploy application as directory"/>
         <echo message="deploywar --> Deploy application as a WAR file"/>
-    	<echo message="clean     --> Delete compiled files"/>
-    	<echo message="undeploy  --> Delete application files from tomcat webapps"/>    	    	
+        <echo message="clean     --> Delete compiled files"/>
+        <echo message="undeploy  --> Delete application files from tomcat webapps"/>
         <echo message="install   --> Install application in Tomcat"/>
         <echo message="reload    --> Reload application in Tomcat"/>
         <echo message="start     --> Start Tomcat application"/>
@@ -51,7 +60,7 @@
             <classpath refid="master-classpath"/>
         </javac>
     </target>
-	
+
     <target name="buildtests" description="Compile test tree java files">
         <mkdir dir="${build.dir}"/>
         <javac destdir="${build.dir}" source="1.5" target="1.5" debug="true"
@@ -60,25 +69,26 @@
             <classpath refid="master-classpath"/>
         </javac>
     </target>
-	
-	<target name="tests" depends="build, buildtests" description="Run tests">
-	        <junit printsummary="on"
+
+    <target name="tests" depends="build, buildtests" description="Run tests">
+        <junit printsummary="on"
 	            fork="false"
 	            haltonfailure="false"
 	            failureproperty="tests.failed"
 	            showoutput="true">
-	            <classpath refid="master-classpath"/>
-	            <formatter type="brief" usefile="false"/>
-	            
-	            <batchtest>
-	                <fileset dir="${build.dir}">
-	                    <include name="**/*Tests.*"/>
-	                </fileset>
-	            </batchtest>
-	            
-	        </junit>
-	        
-	        <fail if="tests.failed">
+            <classpath refid="test-classpath"/>
+            <formatter type="brief" usefile="false"/>
+
+            <batchtest>
+                <fileset dir="${build.dir}">
+                    <include name="**/*Tests.*"/>
+                    <exclude name="**/Jdbc*Tests.*"/>
+                </fileset>
+            </batchtest>
+
+        </junit>
+
+        <fail if="tests.failed">
 	            tests.failed=${tests.failed}
 	            ***********************************************************
 	            ***********************************************************
@@ -86,7 +96,35 @@
 	            ***********************************************************
 	            ***********************************************************
 	        </fail>
-	    </target>
+    </target>
+
+    <target name="dbTests" depends="build, buildtests,dropTables,createTables,loadData" 
+               description="Run db tests">
+        <junit printsummary="on"
+               fork="false"
+               haltonfailure="false"
+               failureproperty="tests.failed"
+               showoutput="true">
+            <classpath refid="test-classpath"/>
+            <formatter type="brief" usefile="false"/>
+
+            <batchtest>
+                <fileset dir="${build.dir}">
+                    <include name="**/Jdbc*Tests.*"/>
+                </fileset>
+            </batchtest>
+
+        </junit>
+
+        <fail if="tests.failed">
+               tests.failed=${tests.failed}
+               ***********************************************************
+               ***********************************************************
+               ****  One or more tests failed!  Check the output ...  ****
+               ***********************************************************
+               ***********************************************************
+           </fail>
+    </target>
 
     <target name="deploy" depends="build" description="Deploy application">
         <copy todir="${deploy.path}/${name}" preservelastmodified="true">
@@ -109,7 +147,7 @@
             </fileset>
         </copy>
     </target>
-	
+
     <target name="clean" description="Clean output directories">
         <delete>
             <fileset dir="${build.dir}">
@@ -125,10 +163,10 @@
             </fileset>
         </delete>
     </target>
-    
-<!-- ============================================================== -->
-<!-- Tomcat tasks - remove these if you don't have Tomcat installed -->
-<!-- ============================================================== -->
+
+    <!-- ============================================================== -->
+    <!-- Tomcat tasks - remove these if you don't have Tomcat installed -->
+    <!-- ============================================================== -->
 
     <path id="catalina-ant-classpath">
         <!-- We need the Catalina jars for Tomcat -->
@@ -189,7 +227,7 @@
                  password="${tomcat.manager.password}"/>
     </target>
 
-<!-- End Tomcat tasks -->
+    <!-- End Tomcat tasks -->
 
 
     <target name="createTables">
@@ -199,9 +237,9 @@
              userid="${db.user}"
              password="${db.pw}"
              onerror="continue"
-             src="db/create_products.sql">  
+             src="db/create_products.sql">
             <classpath refid="master-classpath"/>
-        </sql> 
+        </sql>
     </target>
 
     <target name="dropTables">
@@ -210,12 +248,12 @@
              url="${db.url}"
              userid="${db.user}"
              password="${db.pw}"
-             onerror="continue">  
+             onerror="continue">
             <classpath refid="master-classpath"/>
 
         DROP TABLE products;
 
-        </sql> 
+        </sql>
     </target>
 
     <target name="loadData">
@@ -225,9 +263,9 @@
              userid="${db.user}"
              password="${db.pw}"
              onerror="continue"
-             src="db/load_data.sql">  
+             src="db/load_data.sql">
             <classpath refid="master-classpath"/>
-        </sql> 
+        </sql>
     </target>
 
     <target name="printData">
@@ -237,12 +275,12 @@
              userid="${db.user}"
              password="${db.pw}"
              onerror="continue"
-             print="true">  
+             print="true">
             <classpath refid="master-classpath"/>
 
         SELECT * FROM products;
 
-        </sql> 
+        </sql>
     </target>
 
     <target name="clearData">
@@ -251,12 +289,12 @@
              url="${db.url}"
              userid="${db.user}"
              password="${db.pw}"
-             onerror="continue">  
+             onerror="continue">
             <classpath refid="master-classpath"/>
 
         DELETE FROM products;
 
-        </sql> 
+        </sql>
     </target>
 
     <target name="shutdownDb">
@@ -265,12 +303,12 @@
              url="${db.url}"
              userid="${db.user}"
              password="${db.pw}"
-             onerror="continue">  
+             onerror="continue">
             <classpath refid="master-classpath"/>
 
         SHUTDOWN;
 
-        </sql> 
+        </sql>
     </target>
 
 </project>
